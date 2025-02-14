@@ -13,10 +13,26 @@ gcc -o CrowsNoClaws -Iinclude crowsnoclaws.c src/board.c src/move_generator.c
 ### TODO
 
 - [x] Simple board representation
-    * [x] Initialize board
+    - [x] Initialize board
+    - [x] Print board
 - [ ] Add move generator
-- [ ] Improve bitboard
+    - [ ] Black Magic
+    - [ ] Legal Moves
+    - [ ] Castling
+    - [ ] En Passant
+    - [ ] Promotion
+- [ ] Improve board
+    - [ ] Higher level representation for 32bit systems compatibility 
+    - [ ] Optimize code
 - [ ] Implement eval
+    - [ ] Centipawn eval - varying knight and bishop value
+    - [ ] Normal eval
+    - [ ] NNUE eval
+- [ ] Move Ordering
 - [ ] Implement search
-- [ ] Implement GUI
+    - [ ] Alpha-Beta
+    - [ ] Monte Carlo
 - [ ] Basic UCI
+- [ ] Implement UI
+    - [ ] CLI
+    - [ ] GUI
