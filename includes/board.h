@@ -5,14 +5,14 @@
 #include <stdbool.h>
 
 enum {
-    A1 = 0x01, B1 = 0x02, C1 = 0x04, D1 = 0x08, E1 = 0x10, F1 = 0x20, G1 = 0x40, H1 = 0x80,
-    A2 = 0x100, B2 = 0x200, C2 = 0x400, D2 = 0x800, E2 = 0x1000, F2 = 0x2000, G2 = 0x4000, H2 = 0x8000,
-    A3 = 0x10000, B3 = 0x20000, C3 = 0x40000, D3 = 0x80000, E3 = 0x100000, F3 = 0x200000, G3 = 0x400000, H3 = 0x800000,
-    A4 = 0x1000000, B4 = 0x2000000, C4 = 0x4000000, D4 = 0x8000000, E4 = 0x10000000, F4 = 0x20000000, G4 = 0x40000000, H4 = 0x80000000,
-    A5 = 0x100000000, B5 = 0x200000000, C5 = 0x400000000, D5 = 0x800000000, E5 = 0x1000000000, F5 = 0x2000000000, G5 = 0x4000000000, H5 = 0x8000000000,
-    A6 = 0x10000000000, B6 = 0x20000000000, C6 = 0x40000000000, D6 = 0x80000000000, E6 = 0x100000000000, F6 = 0x200000000000, G6 = 0x400000000000, H6 = 0x800000000000,
-    A7 = 0x1000000000000, B7 = 0x2000000000000, C7 = 0x4000000000000, D7 = 0x8000000000000, E7 = 0x10000000000000, F7 = 0x20000000000000, G7 = 0x40000000000000, H7 = 0x80000000000000,
-    A8 = 0x100000000000000, B8 = 0x200000000000000, C8 = 0x400000000000000, D8 = 0x800000000000000, E8 = 0x1000000000000000, F8 = 0x2000000000000000, G8 = 0x4000000000000000, H8 = 0x8000000000000000
+    A1, B1, C1, D1, E1, F1, G1, H1,
+    A2, B2, C2, D2, E2, F2, G2, H2,
+    A3, B3, C3, D3, E3, F3, G3, H3,
+    A4, B4, C4, D4, E4, F4, G4, H4,
+    A5, B5, C5, D5, E5, F5, G5, H5,
+    A6, B6, C6, D6, E6, F6, G6, H6,
+    A7, B7, C7, D7, E7, F7, G7, H7,
+    A8, B8, C8, D8, E8, F8, G8, H8
 };
 
 typedef struct {
@@ -28,8 +28,26 @@ typedef struct {
 
 void init_board(Board *board);
 void print_board(Board *board);
+void print_bitboard(uint64_t board);
 
 bool get_bit(uint64_t board, uint8_t square);
 uint64_t sqr2bit(uint8_t square);
+uint64_t emptySqrs(Board board);
+uint64_t emptySqrsS(Board board, bool side);
+
+// (Pre)-Cache
+typedef struct {
+    uint64_t data[64];
+} BBCache;
+
+BBCache bbHorse_cache();
+
+uint64_t kingAtk(uint64_t bbksqr);
+
+uint64_t pawnSinglePushAtk(uint64_t bbpsqr, uint64_t bbemptsqr, bool side);
+uint64_t pawnDoublePushAtk(uint64_t bbpsqr, uint64_t bbemptsqr, bool side);
+uint64_t pawnAtk(uint64_t bbp, Board b, bool side);
+
+BBCache horseAtkCache;
 
 #endif // BOARD_H

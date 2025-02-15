@@ -25,6 +25,35 @@ bool get_bit(uint64_t board, uint8_t square) {
 uint64_t sqr2bit(uint8_t square) {
     return 1ULL << square;
 }
+/**
+ * @brief Return a 64-bit bitboard with all squares set that are empty.
+ * 
+ * This function takes a Board structure and returns a 64-bit bitboard with all
+ * squares set that are empty (i.e. not occupied by any piece) on the board.
+ * 
+ * @param board The Board structure to calculate the empty squares for.
+ * @return A 64-bit bitboard with all squares set that are empty.
+ */
+uint64_t emptySqrs(Board board) {
+    uint64_t out = 0;
+    out |= board.pawn[WHITE]   | board.pawn[BLACK];
+    out |= board.rook[WHITE]   | board.rook[BLACK];
+    out |= board.knight[WHITE] | board.knight[BLACK];
+    out |= board.bishop[WHITE] | board.bishop[BLACK];
+    out |= board.queen[WHITE]  | board.queen[BLACK];
+    out |= board.king[WHITE]   | board.king[BLACK];
+    return ~out;
+}
+uint64_t emptySqrsS(Board board, bool side) {
+    uint64_t out = 0;
+    out |= board.pawn[side];
+    out |= board.rook[side];
+    out |= board.knight[side];
+    out |= board.bishop[side];
+    out |= board.queen[side];
+    out |= board.king[side];
+    return ~out;
+}
 
 /**
  * @brief Initialize a board with the starting position.
@@ -36,23 +65,23 @@ void init_board(Board *b) {
     b->side = WHITE;
 
     // pawns
-    b->pawn[WHITE] = A2 | B2 | C2 | D2 | E2 | F2 | G2 | H2;
-    b->pawn[BLACK] = A7 | B7 | C7 | D7 | E7 | F7 | G7 | H7;
+    b->pawn[WHITE] = sqr2bit(A2) | sqr2bit(B2) | sqr2bit(C2) | sqr2bit(D2) | sqr2bit(E2) | sqr2bit(F2) | sqr2bit(G2) | sqr2bit(H2);
+    b->pawn[BLACK] = sqr2bit(A7) | sqr2bit(B7) | sqr2bit(C7) | sqr2bit(D7) | sqr2bit(E7) | sqr2bit(F7) | sqr2bit(G7) | sqr2bit(H7);
     // rook
-    b->rook[WHITE] = A1 | H1;
-    b->rook[BLACK] = A8 | H8;
+    b->rook[WHITE] = sqr2bit(A1) | sqr2bit(H1);
+    b->rook[BLACK] = sqr2bit(A8) | sqr2bit(H8);
     // knight
-    b->knight[WHITE] = B1 | G1;
-    b->knight[BLACK] = B8 | G8;
+    b->knight[WHITE] = sqr2bit(B1) | sqr2bit(G1);
+    b->knight[BLACK] = sqr2bit(B8) | sqr2bit(G8);
     // bishop
-    b->bishop[WHITE] = C1 | F1;
-    b->bishop[BLACK] = C8 | F8;
+    b->bishop[WHITE] = sqr2bit(C1) | sqr2bit(F1);
+    b->bishop[BLACK] = sqr2bit(C8) | sqr2bit(F8);
     // queen
-    b->queen[WHITE] = D1;
-    b->queen[BLACK] = D8;
+    b->queen[WHITE] = sqr2bit(D1);
+    b->queen[BLACK] = sqr2bit(D8);
     // king
-    b->king[WHITE] = E1;
-    b->king[BLACK] = E8;
+    b->king[WHITE] = sqr2bit(E1);
+    b->king[BLACK] = sqr2bit(E8);
 }
 
 /**
@@ -105,4 +134,105 @@ void print_board(Board *b) {
         printf("%d\n", rank + 1);
     }
     printf("a b c d e f g h\n");
+}
+
+/**
+ * @brief Print a 64-bit bitboard to the console.
+ *
+ * This function takes a 64-bit bitboard and prints it to the console
+ * in a human-readable format. The bitboard is printed with ranks
+ * (1-8) and files (a-h). The bit at each square is represented as
+ * either 0 or 1.
+ */
+void print_bitboard(uint64_t board) {
+    printf(" \n");
+    for (int rank = 7; rank >= 0; rank--) {
+        for (int file = 0; file < 8; file++) {
+            uint8_t square = rank * 8 + file;
+            printf("%d ", get_bit(board, square));
+        }
+        printf("\"%d\"\n", rank + 1);
+    }
+    printf("a b c d e f g h\n");
+}
+
+
+uint64_t horseAtk(uint64_t bbhsqr) {
+    return northOne(noWeOne(bbhsqr)) | westOne(noWeOne(bbhsqr)) | southOne(soWeOne(bbhsqr)) | southOne(soEaOne(bbhsqr)) | westOne(soWeOne(bbhsqr)) | eastOne(soEaOne(bbhsqr)) | northOne(noEaOne(bbhsqr)) | eastOne(noEaOne(bbhsqr));
+}
+/**
+ * @brief Compute and return a pre-computed cache of all the attacks of a horse at each square on the board.
+ * 
+ * This function pre-computes all of the attacks of a horse at each square on the board and returns a pre-computed
+ * cache of all of these attacks. This cache can then be queried to retrieve the set of squares that a horse at a given
+ * square can attack. This cache is computed by calling the horseAtk() function on each square on the board, and storing
+ * the resulting set of squares that the horse can attack in the cache.
+ * 
+ * @return A pre-computed cache of all of the attacks of a horse at each square on the board.
+ */
+BBCache bbHorse_cache() {
+    BBCache cache = {0};
+    for (int i = 0; i < 64; i++) {
+        uint64_t horse = sqr2bit(i);
+        cache.data[i] = horseAtk(horse);
+    }
+    return cache;
+}
+/**
+ * @brief Calculate the attack bitboard for a king on a given square.
+ * 
+ * This function computes the set of squares that a king can attack from its
+ * current position on the board. It takes into account all possible king moves,
+ * which include moving one square in any direction (north, south, east, west, 
+ * northeast, northwest, southeast, southwest).
+ * 
+ * @param bbksqr A 64-bit bitboard with only the king's current square set.
+ * @return A 64-bit bitboard representing all squares the king can attack.
+ */
+uint64_t kingAtk(uint64_t bbksqr) {
+    return northOne(bbksqr) | westOne(bbksqr) | southOne(bbksqr) | eastOne(bbksqr) |
+           noWeOne(bbksqr)  | noEaOne(bbksqr) | soWeOne(bbksqr)  | soEaOne(bbksqr);
+}
+
+/**
+ * @brief Compute and return the set of squares that a pawn at a given square
+ *        can attack with a single push.
+ *
+ * This function takes a 64-bit bitboard with only the pawn's current square set
+ * and a 64-bit bitboard with all empty squares set, and returns a 64-bit
+ * bitboard representing all squares the pawn can attack with a single push.
+ *
+ * @param bbpsqr A 64-bit bitboard with only the pawn's current square set.
+ * @param bbemptsqr A 64-bit bitboard with all empty squares set.
+ * @param side The side of the pawn (WHITE or BLACK).
+ * @return A 64-bit bitboard representing all squares the pawn can attack.
+ */
+uint64_t pawnSinglePushAtk(uint64_t bbpsqr, uint64_t bbemptsqr, bool side) {
+    return ((bbpsqr << 8) >> (side << 4)) & bbemptsqr;
+}
+/**
+ * @brief Compute and return the set of squares that a pawn at a given square
+ *        can attack with a double push.
+ *
+ * This function takes a 64-bit bitboard with only the pawn's current square set,
+ * a 64-bit bitboard with all empty squares set, and the side of the pawn, and
+ * returns a 64-bit bitboard representing all squares the pawn can attack with a
+ * double push from its initial rank. The function considers whether the pawn is
+ * on its starting rank and whether the destination squares are unoccupied.
+ *
+ * @param bbpsqr A 64-bit bitboard with only the pawn's current square set.
+ * @param bbemptsqr A 64-bit bitboard with all empty squares set.
+ * @param side The side of the pawn (WHITE or BLACK).
+ * @return A 64-bit bitboard representing all squares the pawn can attack with
+ *         a double push.
+ */
+uint64_t pawnDoublePushAtk(uint64_t bbpsqr, uint64_t bbemptsqr, bool side) {
+    uint64_t rank = 0x000000FF00000000 | 0x00000000FF000000;
+    bbpsqr = pawnSinglePushAtk(bbpsqr, bbemptsqr, side);
+    return pawnSinglePushAtk(bbpsqr, bbemptsqr, side) & rank; 
+}
+
+
+uint64_t pawnAtk(uint64_t bbp, Board b, bool side) {
+    return (!side ? (noWeOne(bbp) | noEaOne(bbp)) : (soWeOne(bbp) | soEaOne(bbp))) & ~emptySqrsS(b, side);
 }
