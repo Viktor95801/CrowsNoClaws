@@ -44,8 +44,10 @@ BBCache bbHorse_cache();
 BBCache bbKing_cache();
 
 uint64_t kingAtk(uint64_t bbksqr);
-uint64_t rookAtk(uint64_t bbrsqr, uint64_t blockers);
-uint64_t bishopAtk(uint64_t bbrsqr, uint64_t blockers);
+uint64_t rookAtk_OnTheFly(uint64_t bbrsqr, uint64_t blockers);
+uint64_t bishopAtk_OnTheFly(uint64_t bbrsqr, uint64_t blockers);
+uint64_t bishopAtk(uint64_t bbrsqr);
+uint64_t rookAtk(uint64_t bbrsqr);
 
 uint64_t pawnSinglePushAtk(uint64_t bbpsqr, uint64_t bbemptsqr, bool side);
 uint64_t pawnDoublePushAtk(uint64_t bbpsqr, uint64_t bbemptsqr, bool side);

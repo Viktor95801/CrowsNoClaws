@@ -252,7 +252,7 @@ uint64_t pawnAtk(uint64_t bbp, Board b, bool side) {
     return result;
 }
 
-uint64_t rookAtk(uint64_t bbrsqr, uint64_t blockers) {
+uint64_t rookAtk_OnTheFly(uint64_t bbrsqr, uint64_t blockers) {
     uint64_t attacks = 0;
     uint64_t copy_bbrsqr = bbrsqr;
     // north
@@ -285,7 +285,7 @@ uint64_t rookAtk(uint64_t bbrsqr, uint64_t blockers) {
     return attacks;
 }
 
-uint64_t bishopAtk(uint64_t bbrsqr, uint64_t blockers) {
+uint64_t bishopAtk_OnTheFly(uint64_t bbrsqr, uint64_t blockers) {
     uint64_t attacks = 0;
     uint64_t copy_bbrsqr = bbrsqr;
     // north
@@ -314,6 +314,64 @@ uint64_t bishopAtk(uint64_t bbrsqr, uint64_t blockers) {
         attacks |= soEaOne(copy_bbrsqr);
         copy_bbrsqr = soEaOne(copy_bbrsqr);
         if (blockers & copy_bbrsqr) break;
+    }
+    return attacks;
+}
+
+uint64_t rookAtk(uint64_t bbrsqr) {
+    uint64_t attacks = 0;
+    uint64_t copy_bbrsqr = bbrsqr;
+    // north
+    for (int i = 0; i < 9; i++) {
+        attacks |= northOne(copy_bbrsqr);
+        copy_bbrsqr = northOne(copy_bbrsqr);
+    }
+    copy_bbrsqr = bbrsqr;
+    // south
+    for (int i = 0; i < 9; i++) {
+        attacks |= southOne(copy_bbrsqr);
+        copy_bbrsqr = southOne(copy_bbrsqr);
+    }
+    copy_bbrsqr = bbrsqr;
+    // east
+    for (int i = 0; i < 9; i++) {
+        attacks |= eastOne(copy_bbrsqr);
+        copy_bbrsqr = eastOne(copy_bbrsqr);
+    }
+    copy_bbrsqr = bbrsqr;
+    // west
+    for (int i = 0; i < 9; i++) {
+        attacks |= westOne(copy_bbrsqr);
+        copy_bbrsqr = westOne(copy_bbrsqr);
+    }
+    return attacks;
+}
+
+uint64_t bishopAtk(uint64_t bbrsqr) {
+    uint64_t attacks = 0;
+    uint64_t copy_bbrsqr = bbrsqr;
+    // north
+    for (int i = 0; i < 9; i++) {
+        attacks |= noWeOne(copy_bbrsqr);
+        copy_bbrsqr = noWeOne(copy_bbrsqr);
+    }
+    copy_bbrsqr = bbrsqr;
+    // south
+    for (int i = 0; i < 9; i++) {
+        attacks |= soWeOne(copy_bbrsqr);
+        copy_bbrsqr = soWeOne(copy_bbrsqr);
+    }
+    copy_bbrsqr = bbrsqr;
+    // east
+    for (int i = 0; i < 9; i++) {
+        attacks |= noEaOne(copy_bbrsqr);
+        copy_bbrsqr = noEaOne(copy_bbrsqr);
+    }
+    copy_bbrsqr = bbrsqr;
+    // west
+    for (int i = 0; i < 9; i++) {
+        attacks |= soEaOne(copy_bbrsqr);
+        copy_bbrsqr = soEaOne(copy_bbrsqr);
     }
     return attacks;
 }
