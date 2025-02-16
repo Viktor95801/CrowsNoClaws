@@ -23,32 +23,32 @@
  * This function takes an index, the number of bits in the attack mask, and the attack mask itself
  * and returns a set of squares that occupy the attack mask according to the index.
  *
- * The function iterates over the range of bits in the attack mask, and for each bit, if the index
- * has that bit set, it adds the corresponding square to the occupancy map.
+ * The function uses a bit population count to find the first set bit in the index, and from there
+ * it iterates over the range of bits in the attack mask, and for each bit, if the index has that
+ * bit set, it adds the corresponding square to the occupancy map.
  *
  * @param index The index to use for generating the occupancy map.
  * @param bits_in_mask The number of bits in the attack mask.
  * @param attack_mask The attack mask to use for generating the occupancy map.
  * @return A set of squares that occupy the attack mask according to the index.
  */
-uint64_t occupancySet(int index, int bits_in_mask, uint64_t attack_mask)
-{
+uint64_t occupancySet(int index, int bits_in_mask, uint64_t attack_mask) {
     // occupancy map
     uint64_t occupancy = 0ULL;
     
     // loop over the range of bits within attack mask
     for (int count = 0; count < bits_in_mask; count++)
     {
-        // get LS1B index of attacks mask
-        int square = LSB(attack_mask);
-        
-        // pop LS1B in attack map
-        (get_bit(attack_mask, square) ? (attack_mask ^= (1ULL << square)) : 0);
+        // find first set bit in index
+        int square = LSB(index);
         
         // make sure occupancy is on board
-        if (index & (1 << count))
+        if (square < 64)
             // populate occupancy map
             occupancy |= (1ULL << square);
+        
+        // clear LS1B of index
+        index &= ~(1ULL << square);
     }
     
     // return occupancy map
@@ -229,9 +229,10 @@ uint64_t rookAttacksMgc(uint64_t occ, int sq) {
 
 void initBishopAtk_cache() {
     for (int sqr = 0; sqr < 64; sqr++) {
-        bishopMask[sqr] = bishopAtk(sqr);
-
+        printf("initBishopAtk_cache: sqr \'%d\' \n", sqr);
         uint64_t mask = bishopAtk(sqr);
+        bishopMask[sqr] = mask;
+
         int bit_count = count_bits(mask);
 
         int occupancy_variations = 1 << bit_count;
@@ -246,6 +247,7 @@ void initBishopAtk_cache() {
 }
 void initRookAtk_cache() {
     for (int sqr = 0; sqr < 64; sqr++) {
+        printf("initRookAtk_cache: Currently on square \'%d\' \n", sqr);
         rookMask[sqr] = rookAtk(sqr);
 
         uint64_t mask = rookAtk(sqr);
@@ -301,16 +303,10 @@ uint64_t u64Random() {
  */
 
 uint32_t count_bits(uint64_t bitboard) {
-    uint64_t count = 0;
-    static const uint64_t m1 = 0x5555555555555555;
-    static const uint64_t m2 = 0x3333333333333333;
-    static const uint64_t m4 = 0x0f0f0f0f0f0f0f0f;
-
-    bitboard -= (bitboard >> 1) & m1;
-    bitboard  = (bitboard & m2) + ((bitboard >> 2) & m2);
-    bitboard  = (bitboard + (bitboard >> 4)) & m4;
-    count     = bitboard + (bitboard >> 8);
-    count     = (count + (count >> 16)) & 0x3f;
-
+    uint32_t count = 0;
+    while (bitboard) {
+        count += bitboard & 1;
+        bitboard >>= 1;
+    }
     return count;
 }

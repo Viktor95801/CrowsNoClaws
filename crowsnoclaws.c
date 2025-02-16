@@ -11,6 +11,10 @@
 
 int main(int argc, char *argv[]) {
 
+    printf("non pre computed rook");
+    print_bitboard(rookAtk_OnTheFly(sqr2bit(E1), sqr2bit(E8) | sqr2bit(B1)));
+    printf("non pre computed bishop");
+    print_bitboard(bishopAtk_OnTheFly(sqr2bit(E1), sqr2bit(G3) | sqr2bit(A5)));
     horseAtkCache = bbHorse_cache();
     kingAtkCache = bbKing_cache();
 
