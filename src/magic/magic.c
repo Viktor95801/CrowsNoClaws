@@ -229,12 +229,25 @@ uint64_t rookAttacksMgc(uint64_t occ, int sq) {
 
 void initBishopAtk_cache() {
     for (int sqr = 0; sqr < 64; sqr++) {
-        printf("initBishopAtk_cache: sqr \'%d\' \n", sqr);
+        printf("sqr %d\n", sqr);
+//        printf("initBishopAtk_cache: sqr \'%d\' \n", sqr);
         uint64_t mask = bishopAtk(sqr);
         bishopMask[sqr] = mask;
 
         int bit_count = count_bits(mask);
-
+        /*
+        0 0 0 0 0 0 0 1
+        1 0 0 0 0 0 1 0
+        0 1 0 0 0 1 0 0
+        0 0 1 0 1 0 0 0
+        0 0 0 0 0 0 0 0
+        0 0 1 0 1 0 0 0
+        0 1 0 0 0 1 0 0
+        1 0 0 0 0 0 1 0
+        bit count: 13
+        occupancy variations: 10000000000000 decimal 8192
+        my pc still dies
+        */
         int occupancy_variations = 1 << bit_count;
 
         for (int i = 0; i < occupancy_variations; i++) {
@@ -247,19 +260,32 @@ void initBishopAtk_cache() {
 }
 void initRookAtk_cache() {
     for (int sqr = 0; sqr < 64; sqr++) {
-        printf("initRookAtk_cache: Currently on square \'%d\' \n", sqr);
+        printf("sqr %d\n", sqr);
+//        printf("initRookAtk_cache: Currently on square \'%d\' \n", sqr);
         rookMask[sqr] = rookAtk(sqr);
 
         uint64_t mask = rookAtk(sqr);
         int bit_count = count_bits(mask);
-
+        /*
+        1 0 0 0 0 0 0 0
+        1 0 0 0 0 0 0 0
+        1 0 0 0 0 0 0 0
+        1 0 0 0 0 0 0 0
+        1 0 0 0 0 0 0 0
+        1 0 0 0 0 0 0 0
+        1 0 0 0 0 0 0 0
+        0 1 1 1 1 1 1 1
+        bit count = 14
+        occupancy variations = 100000000000000 or in decimal 16384 
+        my computer dies... :sob: */
         int occupancy_variations = 1 << bit_count;
 
         for (int i = 0; i < occupancy_variations; i++) {
             // init occupancies, magic index & attacks
             uint64_t occupancy = occupancySet(i, bit_count, mask);
             uint64_t magic_index = occupancy * rook_magics[sqr] >> (64 - rookRellevantBits[sqr]);
-            cacheRookAtk[sqr][magic_index] = rookAtk_OnTheFly(sqr, occupancy);                
+            cacheRookAtk[sqr][magic_index] = rookAtk_OnTheFly(sqr, occupancy);          
+            printf("occ %d\n", i);      
         }
     }
 }
