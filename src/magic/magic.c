@@ -214,16 +214,16 @@ int bishopRellevantBits[64] = {
 };
 
 uint64_t bishopAttacksMgc(uint64_t occ, int sq) {
-   occ &= bishop_magics[sq];
+   occ &= bishopMask[sq];
    occ *= bishop_magics[sq];
-   occ >>= 64-9;
+   occ >>= 64-bishopRellevantBits[sq];
    return cacheBishopAtk[sq][occ];
 }
 
 uint64_t rookAttacksMgc(uint64_t occ, int sq) {
-    occ &= rook_magics[sq];
+    occ &= rookMask[sq];
     occ *= rook_magics[sq];
-    occ >>= 64-9;
+    occ >>= 64-rookRellevantBits[sq];
     return cacheRookAtk[sq][occ];
 }
 
