@@ -44,15 +44,15 @@ uint64_t emptySqrs(Board board) {
     out |= board.king[WHITE]   | board.king[BLACK];
     return ~out;
 }
-uint64_t emptySqrsS(Board board, bool side) {
+uint64_t filledSqrs(Board board) {
     uint64_t out = 0;
-    out |= board.pawn[side];
-    out |= board.rook[side];
-    out |= board.knight[side];
-    out |= board.bishop[side];
-    out |= board.queen[side];
-    out |= board.king[side];
-    return ~out;
+    out |= board.pawn[WHITE]   | board.pawn[BLACK];
+    out |= board.rook[WHITE]   | board.rook[BLACK];
+    out |= board.knight[WHITE] | board.knight[BLACK];
+    out |= board.bishop[WHITE] | board.bishop[BLACK];
+    out |= board.queen[WHITE]  | board.queen[BLACK];
+    out |= board.king[WHITE]   | board.king[BLACK];
+    return out;
 }
 
 /**
@@ -178,6 +178,7 @@ BBCache bbHorse_cache() {
     }
     return cache;
 }
+
 /**
  * @brief Calculate the attack bitboard for a king on a given square.
  * 
@@ -229,10 +230,14 @@ uint64_t pawnSinglePushAtk(uint64_t bbpsqr, uint64_t bbemptsqr, bool side) {
 uint64_t pawnDoublePushAtk(uint64_t bbpsqr, uint64_t bbemptsqr, bool side) {
     uint64_t rank = 0x000000FF00000000 | 0x00000000FF000000;
     bbpsqr = pawnSinglePushAtk(bbpsqr, bbemptsqr, side);
-    return pawnSinglePushAtk(bbpsqr, bbemptsqr, side) & rank; 
+    uint64_t result = pawnSinglePushAtk(bbpsqr, bbemptsqr, side) & rank;
+    return result;
 }
 
-
 uint64_t pawnAtk(uint64_t bbp, Board b, bool side) {
-    return (!side ? (noWeOne(bbp) | noEaOne(bbp)) : (soWeOne(bbp) | soEaOne(bbp))) & ~emptySqrsS(b, side);
+    uint64_t attackSquares = !side ? noWeOne(bbp) | noEaOne(bbp) :soWeOne(bbp) | soEaOne(bbp);
+    print_bitboard(attackSquares);
+    uint64_t other_board = b.pawn[!side] | b.rook[!side] | b.knight[!side] | b.bishop[!side] | b.queen[!side] | b.king[!side];
+    uint64_t result = attackSquares & other_board;
+    return result;
 }

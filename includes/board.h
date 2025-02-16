@@ -33,7 +33,7 @@ void print_bitboard(uint64_t board);
 bool get_bit(uint64_t board, uint8_t square);
 uint64_t sqr2bit(uint8_t square);
 uint64_t emptySqrs(Board board);
-uint64_t emptySqrsS(Board board, bool side);
+uint64_t filledSqrs(Board board);
 
 // (Pre)-Cache
 typedef struct {
