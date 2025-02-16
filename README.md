@@ -1,5 +1,7 @@
 # Crows No Claws
 
+<img src="assets\CrowsNoClawsLogo.png" width="450" height="450">
+
 Crows No Claws is a simple chess engine that is being developed by a complete begginer at the topic. The name was choosen with the intention to represent how limited the engine is (after all, what would a crow with no claws be able to do?).
 
 ## How to compile
