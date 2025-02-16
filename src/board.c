@@ -194,6 +194,14 @@ uint64_t kingAtk(uint64_t bbksqr) {
     return northOne(bbksqr) | westOne(bbksqr) | southOne(bbksqr) | eastOne(bbksqr) |
            noWeOne(bbksqr)  | noEaOne(bbksqr) | soWeOne(bbksqr)  | soEaOne(bbksqr);
 }
+BBCache bbKing_cache() {
+    BBCache cache = {0};
+    for (int i = 0; i < 64; i++) {
+        uint64_t king = sqr2bit(i);
+        cache.data[i] = kingAtk(king);
+    }
+    return cache;
+}
 
 /**
  * @brief Compute and return the set of squares that a pawn at a given square
@@ -233,11 +241,88 @@ uint64_t pawnDoublePushAtk(uint64_t bbpsqr, uint64_t bbemptsqr, bool side) {
     uint64_t result = pawnSinglePushAtk(bbpsqr, bbemptsqr, side) & rank;
     return result;
 }
-
 uint64_t pawnAtk(uint64_t bbp, Board b, bool side) {
     uint64_t attackSquares = !side ? noWeOne(bbp) | noEaOne(bbp) :soWeOne(bbp) | soEaOne(bbp);
     print_bitboard(attackSquares);
     uint64_t other_board = b.pawn[!side] | b.rook[!side] | b.knight[!side] | b.bishop[!side] | b.queen[!side] | b.king[!side];
     uint64_t result = attackSquares & other_board;
     return result;
+}
+
+uint64_t rookAtk(uint64_t bbrsqr) {
+    uint64_t attacks = 0;
+    uint64_t copy_bbrsqr = bbrsqr;
+    // north
+    for (int i = 0; i < 9; i++) {
+        attacks |= northOne(copy_bbrsqr);
+        copy_bbrsqr = northOne(copy_bbrsqr);
+    }
+    copy_bbrsqr = bbrsqr;
+    // south
+    for (int i = 0; i < 9; i++) {
+        attacks |= southOne(copy_bbrsqr);
+        copy_bbrsqr = southOne(copy_bbrsqr);
+    }
+    copy_bbrsqr = bbrsqr;
+    // east
+    for (int i = 0; i < 9; i++) {
+        attacks |= eastOne(copy_bbrsqr);
+        copy_bbrsqr = eastOne(copy_bbrsqr);
+    }
+    copy_bbrsqr = bbrsqr;
+    // west
+    for (int i = 0; i < 9; i++) {
+        attacks |= westOne(copy_bbrsqr);
+        copy_bbrsqr = westOne(copy_bbrsqr);
+    }
+    return attacks;
+}
+BBCache bbMaskRook_Cache() {
+    BBCache cache = {0};
+    for (int i = 0; i < 64; i++) {
+        uint64_t rook = sqr2bit(i);
+        cache.data[i] = rookAtk(rook);
+    }
+    return cache;
+}
+
+uint64_t bishopAtk(uint64_t bbrsqr) {
+    uint64_t attacks = 0;
+    uint64_t copy_bbrsqr = bbrsqr;
+    // north
+    for (int i = 0; i < 9; i++) {
+        attacks |= noWeOne(copy_bbrsqr);
+        copy_bbrsqr = noWeOne(copy_bbrsqr);
+    }
+    copy_bbrsqr = bbrsqr;
+    // south
+    for (int i = 0; i < 9; i++) {
+        attacks |= soWeOne(copy_bbrsqr);
+        copy_bbrsqr = soWeOne(copy_bbrsqr);
+    }
+    copy_bbrsqr = bbrsqr;
+    // east
+    for (int i = 0; i < 9; i++) {
+        attacks |= noEaOne(copy_bbrsqr);
+        copy_bbrsqr = noEaOne(copy_bbrsqr);
+    }
+    copy_bbrsqr = bbrsqr;
+    // west
+    for (int i = 0; i < 9; i++) {
+        attacks |= soEaOne(copy_bbrsqr);
+        copy_bbrsqr = soEaOne(copy_bbrsqr);
+    }
+    return attacks;
+}
+BBCache bbMaskBishop_Cache() {
+    BBCache cache = {0};
+    for (int i = 0; i < 64; i++) {
+        uint64_t rook = sqr2bit(i);
+        cache.data[i] = bishopAtk(rook);
+    }
+    return cache;
+}
+
+uint64_t queenAtk(uint64_t rook_atk, uint64_t bishop_atk) {
+    return rook_atk | bishop_atk;
 }

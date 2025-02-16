@@ -11,16 +11,15 @@
 int main(int argc, char *argv[]) {
 
     horseAtkCache = bbHorse_cache();
+    rookAtkMaskCache = bbMaskRook_Cache();
+    kingAtkCache = bbKing_cache();
+    bishopAtkMaskCache = bbMaskBishop_Cache();
 
-    Board board;
-    init_board(&board);
-    print_board(&board);
-
-    uint64_t bbp = sqr2bit(E2);
-    board.rook[BLACK] |= sqr2bit(D3);
-
-    uint64_t attacks = pawnAtk(bbp, board, WHITE);
-    print_bitboard(attacks);
+    print_bitboard(rookAtkMaskCache.data[E1]);
+    print_bitboard(bishopAtkMaskCache.data[E1]);
+    print_bitboard(kingAtkCache.data[E1]);
+    print_bitboard(horseAtkCache.data[E1]);
+    print_bitboard(queenAtk(rookAtkMaskCache.data[E1],bishopAtkMaskCache.data[E1]));
 
     return 0;
 }

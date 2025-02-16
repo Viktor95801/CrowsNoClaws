@@ -41,6 +41,9 @@ typedef struct {
 } BBCache;
 
 BBCache bbHorse_cache();
+BBCache bbKing_cache();
+BBCache bbMaskRook_Cache();
+BBCache bbMaskBishop_Cache();
 
 uint64_t kingAtk(uint64_t bbksqr);
 
@@ -48,6 +51,11 @@ uint64_t pawnSinglePushAtk(uint64_t bbpsqr, uint64_t bbemptsqr, bool side);
 uint64_t pawnDoublePushAtk(uint64_t bbpsqr, uint64_t bbemptsqr, bool side);
 uint64_t pawnAtk(uint64_t bbp, Board b, bool side);
 
+uint64_t queenAtk(uint64_t rook_atk, uint64_t bishop_atk);
+
 BBCache horseAtkCache;
+BBCache kingAtkCache;
+BBCache rookAtkMaskCache;
+BBCache bishopAtkMaskCache;
 
 #endif // BOARD_H
