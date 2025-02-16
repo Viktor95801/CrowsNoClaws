@@ -7,6 +7,7 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
+#include <inttypes.h>
 
 /**
  * @brief Get a bit from a 64-bit board at a given square.
@@ -25,6 +26,7 @@ bool get_bit(uint64_t board, uint8_t square) {
 uint64_t sqr2bit(uint8_t square) {
     return 1ULL << square;
 }
+
 /**
  * @brief Return a 64-bit bitboard with all squares set that are empty.
  * 
@@ -154,6 +156,7 @@ void print_bitboard(uint64_t board) {
         printf("\"%d\"\n", rank + 1);
     }
     printf("a b c d e f g h\n");
+    printf("\n\tbitboard: 0x%" PRIx64 " \n", board);  // Use PRIx64 for hexadecimal output
 }
 
 
@@ -249,80 +252,68 @@ uint64_t pawnAtk(uint64_t bbp, Board b, bool side) {
     return result;
 }
 
-uint64_t rookAtk(uint64_t bbrsqr) {
+uint64_t rookAtk(uint64_t bbrsqr, uint64_t blockers) {
     uint64_t attacks = 0;
     uint64_t copy_bbrsqr = bbrsqr;
     // north
     for (int i = 0; i < 9; i++) {
         attacks |= northOne(copy_bbrsqr);
         copy_bbrsqr = northOne(copy_bbrsqr);
+        if (blockers & copy_bbrsqr) break;
     }
     copy_bbrsqr = bbrsqr;
     // south
     for (int i = 0; i < 9; i++) {
         attacks |= southOne(copy_bbrsqr);
         copy_bbrsqr = southOne(copy_bbrsqr);
+        if (blockers & copy_bbrsqr) break;
     }
     copy_bbrsqr = bbrsqr;
     // east
     for (int i = 0; i < 9; i++) {
         attacks |= eastOne(copy_bbrsqr);
         copy_bbrsqr = eastOne(copy_bbrsqr);
+        if (blockers & copy_bbrsqr) break;
     }
     copy_bbrsqr = bbrsqr;
     // west
     for (int i = 0; i < 9; i++) {
         attacks |= westOne(copy_bbrsqr);
         copy_bbrsqr = westOne(copy_bbrsqr);
+        if (blockers & copy_bbrsqr) break;
     }
     return attacks;
 }
-BBCache bbMaskRook_Cache() {
-    BBCache cache = {0};
-    for (int i = 0; i < 64; i++) {
-        uint64_t rook = sqr2bit(i);
-        cache.data[i] = rookAtk(rook);
-    }
-    return cache;
-}
 
-uint64_t bishopAtk(uint64_t bbrsqr) {
+uint64_t bishopAtk(uint64_t bbrsqr, uint64_t blockers) {
     uint64_t attacks = 0;
     uint64_t copy_bbrsqr = bbrsqr;
     // north
     for (int i = 0; i < 9; i++) {
         attacks |= noWeOne(copy_bbrsqr);
         copy_bbrsqr = noWeOne(copy_bbrsqr);
+        if (blockers & copy_bbrsqr) break;
     }
     copy_bbrsqr = bbrsqr;
     // south
     for (int i = 0; i < 9; i++) {
         attacks |= soWeOne(copy_bbrsqr);
         copy_bbrsqr = soWeOne(copy_bbrsqr);
+        if (blockers & copy_bbrsqr) break;
     }
     copy_bbrsqr = bbrsqr;
     // east
     for (int i = 0; i < 9; i++) {
         attacks |= noEaOne(copy_bbrsqr);
         copy_bbrsqr = noEaOne(copy_bbrsqr);
+        if (blockers & copy_bbrsqr) break;
     }
     copy_bbrsqr = bbrsqr;
     // west
     for (int i = 0; i < 9; i++) {
         attacks |= soEaOne(copy_bbrsqr);
         copy_bbrsqr = soEaOne(copy_bbrsqr);
+        if (blockers & copy_bbrsqr) break;
     }
     return attacks;
-}
-BBCache bbMaskBishop_Cache() {
-    BBCache cache = {0};
-    for (int i = 0; i < 64; i++) {
-        uint64_t rook = sqr2bit(i);
-        cache.data[i] = bishopAtk(rook);
-    }
-    return cache;
-}
-
-uint64_t queenAtk(uint64_t rook_atk, uint64_t bishop_atk) {
-    return rook_atk | bishop_atk;
 }
