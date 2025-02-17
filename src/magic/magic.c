@@ -234,7 +234,8 @@ void initBishopAtk_cache() {
         uint64_t mask = bishopAtk(sqr);
         bishopMask[sqr] = mask;
 
-        int bit_count = count_bits(mask);
+        int bit_count = __builtin_popcount(mask);
+        printf("bit count: %d\n", bit_count);
         /*
         0 0 0 0 0 0 0 1
         1 0 0 0 0 0 1 0
@@ -264,8 +265,9 @@ void initRookAtk_cache() {
 //        printf("initRookAtk_cache: Currently on square \'%d\' \n", sqr);
         rookMask[sqr] = rookAtk(sqr);
 
-        uint64_t mask = rookAtk(sqr);
-        int bit_count = count_bits(mask);
+        uint64_t mask = sqr;
+        int bit_count = __builtin_popcount(mask);
+        printf("bit count: %d\n", bit_count);
         /*
         1 0 0 0 0 0 0 0
         1 0 0 0 0 0 0 0
@@ -285,7 +287,7 @@ void initRookAtk_cache() {
             uint64_t occupancy = occupancySet(i, bit_count, mask);
             uint64_t magic_index = occupancy * rook_magics[sqr] >> (64 - rookRellevantBits[sqr]);
             cacheRookAtk[sqr][magic_index] = rookAtk_OnTheFly(sqr, occupancy);          
-            printf("occ %d\n", i);      
+            //printf("occ %d\n", i);      
         }
     }
 }
