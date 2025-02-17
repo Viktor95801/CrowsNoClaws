@@ -9,6 +9,15 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+uint64_t cacheBishopAtk[64][512]; // 256 K
+uint64_t cacheRookAtk[64][4096];   // 2048K
+
+uint64_t bishopMask[64];
+uint64_t rookMask[64];
+
+uint64_t rook_magics[64];
+uint64_t bishop_magics[64];
+
 /**************************************\
  ======================================
         
@@ -214,28 +223,28 @@ int bishopRellevantBits[64] = {
 };
 
 uint64_t bishopAttacksMgc(uint64_t occ, int sq) {
-   occ &= bishopMask[sq];
-   occ *= bishop_magics[sq];
-   occ >>= 64-bishopRellevantBits[sq];
-   return cacheBishopAtk[sq][occ];
+    // (blockers * magic) >> (64 - index_bits), where blockers = occupied & mask
+    int index = ((occ & bishopMask[sq]) * bishop_magics[sq]) >> (64 - bishopRellevantBits[sq]);
+    printf("%llx rook atk bitboard", cacheRookAtk[sq][occ]);
+    return cacheBishopAtk[sq][index];
 }
 
 uint64_t rookAttacksMgc(uint64_t occ, int sq) {
-    occ &= rookMask[sq];
-    occ *= rook_magics[sq];
-    occ >>= 64-rookRellevantBits[sq];
-    return cacheRookAtk[sq][occ];
+    // (blockers * magic) >> (64 - index_bits), where blockers = occupied & mask
+    int index = ((occ & rookMask[sq]) * rook_magics[sq]) >> (64 - rookRellevantBits[sq]);
+    printf("%llx rook atk bitboard", cacheRookAtk[sq][occ]);
+    return cacheRookAtk[sq][index];
 }
 
 void initBishopAtk_cache() {
     for (int sqr = 0; sqr < 64; sqr++) {
-        printf("sqr %d\n", sqr);
+        //printf("sqr %d\n", sqr);
 //        printf("initBishopAtk_cache: sqr \'%d\' \n", sqr);
         uint64_t mask = bishopAtk(sqr);
         bishopMask[sqr] = mask;
 
         int bit_count = __builtin_popcount(mask);
-        printf("bit count: %d\n", bit_count);
+        //printf("bit count: %d\n", bit_count);
         /*
         0 0 0 0 0 0 0 1
         1 0 0 0 0 0 1 0
@@ -255,19 +264,21 @@ void initBishopAtk_cache() {
             // init occupancies, magic index & attacks
             uint64_t occupancy = occupancySet(i, bit_count, mask);
             uint64_t magic_index = occupancy * bishop_magics[sqr] >> (64 - bishopRellevantBits[sqr]);
-            cacheBishopAtk[sqr][magic_index] = bishopAtk_OnTheFly(sqr, occupancy);                
+            cacheBishopAtk[sqr][magic_index] = bishopAtk_OnTheFly(sqr, occupancy);    
+            //print_bitboard(cacheBishopAtk[sqr][magic_index]);
         }
     }
+    printf("Bishop attack cache initialized\n");
 }
 void initRookAtk_cache() {
     for (int sqr = 0; sqr < 64; sqr++) {
-        printf("sqr %d\n", sqr);
+        //printf("sqr %d\n", sqr);
 //        printf("initRookAtk_cache: Currently on square \'%d\' \n", sqr);
         rookMask[sqr] = rookAtk(sqr);
 
         uint64_t mask = sqr;
         int bit_count = __builtin_popcount(mask);
-        printf("bit count: %d\n", bit_count);
+        //printf("bit count: %d\n", bit_count);
         /*
         1 0 0 0 0 0 0 0
         1 0 0 0 0 0 0 0
@@ -290,6 +301,7 @@ void initRookAtk_cache() {
             //printf("occ %d\n", i);      
         }
     }
+    printf("Rook attack cache initialized\n");
 }
 
 uint32_t state = 1804289383;

@@ -9,6 +9,9 @@
 #include <string.h>
 #include <inttypes.h>
 
+BBCache horseAtkCache;
+BBCache kingAtkCache;
+
 /**
  * @brief Get a bit from a 64-bit board at a given square.
  * @param board A 64-bit board.
