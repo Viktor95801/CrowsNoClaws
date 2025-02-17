@@ -53,7 +53,7 @@ uint64_t pawnSinglePushAtk(uint64_t bbpsqr, uint64_t bbemptsqr, bool side);
 uint64_t pawnDoublePushAtk(uint64_t bbpsqr, uint64_t bbemptsqr, bool side);
 uint64_t pawnAtk(uint64_t bbp, Board b, bool side);
 
-BBCache horseAtkCache;
-BBCache kingAtkCache;
+extern BBCache horseAtkCache;
+extern BBCache kingAtkCache;
 
 #endif // BOARD_H
