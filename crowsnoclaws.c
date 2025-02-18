@@ -16,20 +16,13 @@ int main(int argc, char *argv[]) {
     initBishopAtk_cache();
     initRookAtk_cache();
 
-    print_bitboard(rookAttacksMgc(sqr2bit(E3), sqr2bit(E1)));
-    print_bitboard(bishopAttacksMgc(sqr2bit(G3), sqr2bit(E1)));
-    print_bitboard(kingAtkCache.data[E1]);
-    print_bitboard(horseAtkCache.data[E1]);
-
-    uint64_t bitboard = 0xFF00FF;
-    printf("%u\n\n", count_bits(bitboard));
-
     printf("************\nMagic Tests\n************\n");
-    print_bitboard(bishopAttacksMgc(0, sqr2bit(D4)));
-    print_bitboard(rookAttacksMgc(0, sqr2bit(D4)));
+    print_bitboard(bishopAtkCache_get(E4, sqr2bit(D3)));
+    print_bitboard(rookAtkCache_get(E4, sqr2bit(E3)));
 
-    print_bitboard(bishopAttacksMgc(sqr2bit(E3), sqr2bit(D4)));
-    print_bitboard(rookAttacksMgc(sqr2bit(D3), sqr2bit(D4)));
+    print_bitboard(bishopAtkCache_get(E3, 0ULL));
+    print_bitboard(rookAtkCache_get(D3, 0ULL));
 
     return 0;
 }
+

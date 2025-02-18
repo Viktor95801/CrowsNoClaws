@@ -27,6 +27,11 @@
 #define QUEEN 900
 #define KING 90000
 
+// Constant Variables
+
+extern uint64_t rookMagics[64];
+extern uint64_t bishopMagics[64];
+
 /**
  * @brief Returns the least significant bit of a bitboard.
  *
@@ -46,6 +51,15 @@ static inline int LSB(uint64_t bitboard) {
         /* Increment the count for each bit we flip */
         count++;
         bitboard &= bitboard - 1;
+    }
+    return count;
+}
+
+static inline int COUNT_BITS(uint64_t integer) {
+    int count = 0;
+    while (integer) {
+        count++;
+        integer &= integer - 1;
     }
     return count;
 }
