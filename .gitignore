@@ -1,3 +1,4 @@
 .vscode/
 build/*
-resources.txt
+resources*
+*.exe

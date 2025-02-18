@@ -148,3 +148,20 @@ uint64_t bishopMagics[64] = {
     0x8918844842082200ULL,
     0x4010011029020020ULL,
 };
+
+int LSB(uint64_t bitboard) {
+    if (!bitboard) {
+        /* If the bitboard is empty return -1 */
+        return -1;
+    }
+    return COUNT_BITS(bitboard & -bitboard) - 1;
+}
+
+int COUNT_BITS(uint64_t integer) {
+    int count = 0;
+    while (integer) {
+        count++;
+        integer &= integer - 1;
+    }
+    return count;
+}

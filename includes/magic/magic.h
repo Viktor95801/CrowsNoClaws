@@ -17,7 +17,7 @@ void initBishopAtk_cache();
 
 uint64_t occupancySet(int index, int bits_in_mask, uint64_t attack_mask);
 
-uint64_t rookAtkCache_get(uint64_t bbRsqr, uint64_t occ);
-uint64_t bishopAtkCache_get(uint64_t bbBsqr, uint64_t occ);
+uint64_t rookAtkCache_get(uint64_t bbRsqrID, uint64_t occ);
+uint64_t bishopAtkCache_get(uint64_t bbBsqrID, uint64_t occ);
 
 #endif // MAGIC_H

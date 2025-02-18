@@ -38,19 +38,19 @@ uint64_t cacheBishopMoves[64][512];
 uint64_t rookMasks[64];
 uint64_t bishopMasks[64];
 
-uint64_t rookAtkCache_get(uint64_t bbRsqr, uint64_t occ) {
-    printf("Calculating rook attack cache for square: %" PRIu64 " and occupancy: %" PRIu64 "\n", bbRsqr, occ);
-    uint64_t hash = ((occ & rookMasks[bbRsqr]) * rookMagics[bbRsqr]) >> (64 - rookIndexBits[bbRsqr]);
+uint64_t rookAtkCache_get(uint64_t bbRsqrID, uint64_t occ) {
+    printf("Calculating rook attack cache for square: %" PRIu64 " and occupancy: 0x%" PRIX64 "\n", bbRsqrID, occ);
+    uint64_t hash = ((occ & rookMasks[bbRsqrID]) * rookMagics[bbRsqrID]) >> (64 - rookIndexBits[bbRsqrID]);
     printf("Computed hash: %" PRIu64 "\n", hash);
-    uint64_t result = cacheRookMoves[bbRsqr][hash];
+    uint64_t result = cacheRookMoves[bbRsqrID][hash];
     printf("Rook attack result from cache: %" PRIu64 "\n", result);
     return result;
 }
-uint64_t bishopAtkCache_get(uint64_t bbBsqr, uint64_t occ) {
-    printf("Calculating bishop attack cache for square: %" PRIu64 " and occupancy: %" PRIu64 "\n", bbBsqr, occ);
-    uint64_t hash = ((occ & bishopMasks[bbBsqr]) * bishopMagics[bbBsqr]) >> (64 - bishopIndexBits[bbBsqr]);
+uint64_t bishopAtkCache_get(uint64_t bbBsqrID, uint64_t occ) {
+    printf("Calculating bishop attack cache for square: %" PRIu64 " and occupancy: 0x%" PRIX64 "\n", bbBsqrID, occ);
+    uint64_t hash = ((occ & bishopMasks[bbBsqrID]) * bishopMagics[bbBsqrID]) >> (64 - bishopIndexBits[bbBsqrID]);
     printf("Computed hash: %" PRIu64 "\n", hash);
-    uint64_t result = cacheBishopMoves[bbBsqr][hash];
+    uint64_t result = cacheBishopMoves[bbBsqrID][hash];
     printf("Bishop attack result from cache: %" PRIu64 "\n", result);
     return result;
 }
@@ -63,13 +63,14 @@ uint64_t occupancySet(int index, int bits_in_mask, uint64_t attack_mask) {
     for (int count = 0; count < bits_in_mask; count++)
     {
         // get LS1B index of attacks mask
-        #ifdef __GNUC__
-        int square = __builtin_ctzll(attack_mask & -attack_mask);
-        #else
+        //#ifdef __GNUC__
+        //int square = __builtin_ctzll(attack_mask & -attack_mask);
+        //#else
         int square = LSB(attack_mask);
-        #endif
+        //#endif
 
-        attack_mask ^= (1ULL << square);
+        // readable code is for noobs
+        ((attack_mask & (1ULL << square)) ? (attack_mask ^= (1ULL << square)) : 0);
 
         if (index & (1 << count))
             occupancy |= (1ULL << square);
@@ -83,18 +84,18 @@ void initRookAtk_cache() {
         uint64_t mask = rookAtk(sqr2bit(sqr));
         rookMasks[sqr] = mask;
     
-        #ifdef __GNUC__
-        int bit_count = __builtin_popcountll(mask);
-        #else
+        //#ifdef __GNUC__
+        //int bit_count = __builtin_popcountll(mask);
+        //#else
         int bit_count = COUNT_BITS(mask);
-        #endif
+        //#endif
 
         int occ_vary = 1 << bit_count;
 
         for (int cur_occ = 0; cur_occ < occ_vary; cur_occ++) {
             uint64_t occ = occupancySet(cur_occ, bit_count, mask);
             uint64_t magic_index = (occ * rookMagics[sqr]) >> (64 - rookIndexBits[sqr]);
-            cacheBishopMoves[sqr][magic_index] = rookAtk_OnTheFly(sqr2bit(sqr), occ);
+            cacheRookMoves[sqr][magic_index] = rookAtk_OnTheFly(sqr2bit(sqr), occ);
         }
     }
 }
@@ -103,11 +104,11 @@ void initBishopAtk_cache() {
         uint64_t mask = bishopAtk(sqr2bit(sqr));
         bishopMasks[sqr] = mask;
     
-        #ifdef __GNUC__
-        int bit_count = __builtin_popcountll(mask);
-        #else
+        //#ifdef __GNUC__
+        //int bit_count = __builtin_popcountll(mask);
+        //#else
         int bit_count = COUNT_BITS(mask);
-        #endif
+        //#endif
 
         int occ_vary = 1 << bit_count;
 
