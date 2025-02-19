@@ -96,7 +96,7 @@ void init_board(Board *b) {
  * @return The piece at the given square, or '.' if there is no piece.
  */
 char get_piece(Board *b, uint8_t square) {
-    if (square < 0 || square > 63) {
+    if (square > 63) {
         fprintf(stderr, "Invalid square: %u\n", square);
         exit(1);
     }

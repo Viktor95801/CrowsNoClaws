@@ -81,7 +81,8 @@ uint64_t occupancySet(int index, int bits_in_mask, uint64_t attack_mask) {
         if (index & (1 << count))
             occupancy |= (1ULL << square);
     }
-    
+    printf("Occupancy: 0x%" PRIX64 "\n", occupancy);
+    print_bitboard(occupancy);
     return occupancy;
 }
 
@@ -94,6 +95,7 @@ void initRookAtk_cache() {
         //int bit_count = __builtin_popcountll(mask);
         //#else
         int bit_count = COUNT_BITS(mask);
+        printf("bit count: %d\n", bit_count);
         //#endif
 
         int occ_vary = 1 << bit_count;

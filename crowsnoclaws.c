@@ -10,7 +10,7 @@
 #include <stdbool.h>
 #include <inttypes.h>
 
-int main(int argc, char *argv[]) {
+int main(/* int argc, char *argv[] */) {
     horseAtkCache = bbHorse_cache();
     kingAtkCache = bbKing_cache();
 
@@ -38,7 +38,7 @@ int main(int argc, char *argv[]) {
     print_bitboard(bishopAtkCache_get(E4, 0ULL));
     print_bitboard(rookAtkCache_get(E4, 0ULL));
 
-    // bishop
+    /* // bishop
 
     int count = 0;
 
@@ -64,7 +64,7 @@ int main(int argc, char *argv[]) {
         printf("0 count on square %d: %d\n", i, count);
         count = 0;
     }
-
+ */
     system("pause");
     return 0;
 }
