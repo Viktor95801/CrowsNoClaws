@@ -6,10 +6,11 @@ Crows No Claws is a simple chess engine that is being developed by a complete be
 
 ## How to compile
 
-1. run the following command (assuming root directory):
+1.Run the following command (assuming root directory):
 ```bash
-gcc -Wall -Werror -o build/CrowsNoClaws -Iincludes crowsnoclaws.c src/board.c src/move_generator.c src/constant.c src/magic/magic.c -O3
+gcc -Wall -Werror -o build/CrowsNoClaws.exe -Iincludes crowsnoclaws.c src/board.c src/move_generator.c src/constant.c src/magic/magic.c -O3
 ```
+ Then run the executable: `./build/CrowsNoClaws.exe`
 2. Download from the releases option (not yet released).
 
 ### TODO
@@ -18,7 +19,7 @@ gcc -Wall -Werror -o build/CrowsNoClaws -Iincludes crowsnoclaws.c src/board.c sr
     - [x] Initialize board
     - [x] Print board
 - [ ] Add move generator
-    - [ ] Black Magic
+    - [ ] Magic
     - [ ] Legal Moves
     - [ ] Castling
     - [ ] En Passant

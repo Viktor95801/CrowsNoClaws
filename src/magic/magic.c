@@ -40,17 +40,23 @@ uint64_t bishopMasks[64];
 
 uint64_t rookAtkCache_get(uint64_t bbRsqrID, uint64_t occ) {
     printf("Calculating rook attack cache for square: %" PRIu64 " and occupancy: 0x%" PRIX64 "\n", bbRsqrID, occ);
-    uint64_t hash = ((occ & rookMasks[bbRsqrID]) * rookMagics[bbRsqrID]) >> (64 - rookIndexBits[bbRsqrID]);
-    printf("Computed hash: %" PRIu64 "\n", hash);
-    uint64_t result = cacheRookMoves[bbRsqrID][hash];
+    occ &= rookMasks[bbRsqrID];
+    occ *= rookMagics[bbRsqrID];
+    occ >>= 64 - rookIndexBits[bbRsqrID];
+    printf("RookMasks, Magics and IndexBits: 0x%" PRIX64 ", 0x%" PRIX64 ", %d\n", rookMasks[bbRsqrID], rookMagics[bbRsqrID], rookIndexBits[bbRsqrID]);
+    printf("Computed hash: %" PRIu64 "\n", occ);
+    uint64_t result = cacheRookMoves[bbRsqrID][occ];
     printf("Rook attack result from cache: %" PRIu64 "\n", result);
     return result;
 }
 uint64_t bishopAtkCache_get(uint64_t bbBsqrID, uint64_t occ) {
     printf("Calculating bishop attack cache for square: %" PRIu64 " and occupancy: 0x%" PRIX64 "\n", bbBsqrID, occ);
-    uint64_t hash = ((occ & bishopMasks[bbBsqrID]) * bishopMagics[bbBsqrID]) >> (64 - bishopIndexBits[bbBsqrID]);
-    printf("Computed hash: %" PRIu64 "\n", hash);
-    uint64_t result = cacheBishopMoves[bbBsqrID][hash];
+    occ &= bishopMasks[bbBsqrID];
+    occ *= bishopMagics[bbBsqrID];
+    occ >>= 64 - bishopIndexBits[bbBsqrID];
+    printf("BishopMasks, Magics and IndexBits: 0x%" PRIX64 ", 0x%" PRIX64 ", %d\n", bishopMasks[bbBsqrID], bishopMagics[bbBsqrID], bishopIndexBits[bbBsqrID]);
+    printf("Computed hash: %" PRIu64 "\n", occ);
+    uint64_t result = cacheBishopMoves[bbBsqrID][occ];
     printf("Bishop attack result from cache: %" PRIu64 "\n", result);
     return result;
 }
@@ -96,6 +102,8 @@ void initRookAtk_cache() {
             uint64_t occ = occupancySet(cur_occ, bit_count, mask);
             uint64_t magic_index = (occ * rookMagics[sqr]) >> (64 - rookIndexBits[sqr]);
             cacheRookMoves[sqr][magic_index] = rookAtk_OnTheFly(sqr2bit(sqr), occ);
+            //if (magic_index == 0)
+            //    printf("initRookAtk_cache: square: %d occupancy: 0x%" PRIX64 " magic index is zero \n", sqr, occ);
         }
     }
 }
@@ -116,6 +124,8 @@ void initBishopAtk_cache() {
             uint64_t occ = occupancySet(cur_occ, bit_count, mask);
             uint64_t magic_index = (occ * bishopMagics[sqr]) >> (64 - bishopIndexBits[sqr]);
             cacheBishopMoves[sqr][magic_index] = bishopAtk_OnTheFly(sqr2bit(sqr), occ);
+            //if (magic_index == 0)
+            //    printf("initBishopAtk_cache: square: %d occupancy: 0x%" PRIX64 " magic index is zero \n", sqr, occ);
         }
     }
 }
