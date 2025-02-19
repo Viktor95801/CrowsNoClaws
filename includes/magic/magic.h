@@ -12,6 +12,8 @@ extern uint64_t bishopMasks[64];
 extern int rookIndexBits[64];
 extern int bishopIndexBits[64];
 
+void printMagics();
+
 void initRookAtk_cache();
 void initBishopAtk_cache();
 

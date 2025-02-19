@@ -17,6 +17,8 @@ int main(/* int argc, char *argv[] */) {
     initBishopAtk_cache();
     initRookAtk_cache();
 
+    printMagics();
+
     uint64_t bocc = 0;
     bocc |= sqr2bit(D3) | sqr2bit(E3) | sqr2bit(F5) | sqr2bit(D4);
     
@@ -65,6 +67,7 @@ int main(/* int argc, char *argv[] */) {
         count = 0;
     }
  */
+    
     system("pause");
     return 0;
 }
