@@ -9,6 +9,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <inttypes.h>
+#include <time.h>
 
 int rookIndexBits[64] = {
     12, 11, 11, 11, 11, 11, 11, 12,
@@ -65,15 +66,23 @@ uint64_t occupancySet(int index, int bits_in_mask, uint64_t attack_mask) {
     return occupancy;
 }
 
-uint32_t state = 982729017;
+uint32_t seed = 1804289383;
 uint32_t uRandom32() {
     // XOR shift algorithm
-    uint32_t x = state;
+    seed ^= seed << 13;
+    seed ^= seed >> 17;
+    seed ^= seed << 5;
+
+    // PCG
+    //uint64_t state = (uint64_t)seed * 6364136223846793005ULL + 128301763864ULL;
+    //seed = (uint32_t)(state >> 2) ^ state;
+
+/*     uint32_t x = state;
     x ^= x << 13;
     x ^= x >> 17;
     x ^= x << 5;
-    state = x;
-    return x;
+    state = x; */
+    return seed;
 }
 
 uint64_t uRandom64() {
@@ -92,9 +101,9 @@ uint64_t uRandom64() {
 uint64_t findMagicBishop(int sqr) {
     int index_bits = bishopIndexBits[sqr];
 
-    uint64_t occs[4096];
-    uint64_t attacks[4096];
-    uint64_t attacksUsed[4096];
+    uint64_t occs[512];
+    uint64_t attacks[512];
+    uint64_t attacksUsed[512];
 
     uint64_t mask = bishopAtk(sqr2bit(sqr));
     int occ_vary = 1 << index_bits;

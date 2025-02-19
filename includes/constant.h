@@ -29,8 +29,8 @@
 
 // Constant Variables
 
-extern uint64_t rookMagics[64];
-extern uint64_t bishopMagics[64];
+extern const uint64_t rookMagics[64];
+extern const uint64_t bishopMagics[64];
 
 
 extern int COUNT_BITS(uint64_t integer);

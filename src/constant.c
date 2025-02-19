@@ -82,7 +82,7 @@ const uint64_t rookMagics[64] = {
     0x280124E000002EC,
     0x41000201015E,
 };
-uint64_t bishopMagics[64] = {
+const uint64_t bishopMagics[64] = {
     0x40040844404084ULL,
     0x2004208a004208ULL,
     0x10190041080202ULL,
