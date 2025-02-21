@@ -4,7 +4,7 @@ uint64_t rookVertical(uint64_t occ, uint8_t sqr) {
     return subsetVertical[sqr][(((occ & maskVertical[sqr]) * verticalMult[sqr]) >> 58)];
 }
 uint64_t rookHorizontal(uint64_t occ, uint8_t sqr) {
-    return subsetHorizontal[sqr - 1][((occ >> (horizontalShiftTbl[sqr])) & 0xff)];
+    return subsetHorizontal[sqr][((occ >> (horizontalShiftTbl[sqr])) & 0x3f)];
 }
 uint64_t bishopDiagonal(uint64_t occ, uint8_t sqr) {
     return subsetDiagonal[sqr][(((occ & maskDiagonal[sqr]) * B2_B7) >> 58)];  
