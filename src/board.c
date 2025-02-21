@@ -26,7 +26,7 @@ bool get_bit(uint64_t board, uint8_t square) {
  * @param square The square to set in the bitboard.
  * @return A 64-bit bitboard with only the given square set.
  */
-uint64_t sqr2bit(uint8_t square) {
+uint64_t set_bit(uint8_t square) {
     return 1ULL << square;
 }
 
@@ -70,23 +70,23 @@ void init_board(Board *b) {
     b->side = WHITE;
 
     // pawns
-    b->pawn[WHITE] = sqr2bit(A2) | sqr2bit(B2) | sqr2bit(C2) | sqr2bit(D2) | sqr2bit(E2) | sqr2bit(F2) | sqr2bit(G2) | sqr2bit(H2);
-    b->pawn[BLACK] = sqr2bit(A7) | sqr2bit(B7) | sqr2bit(C7) | sqr2bit(D7) | sqr2bit(E7) | sqr2bit(F7) | sqr2bit(G7) | sqr2bit(H7);
+    b->pawn[WHITE] = set_bit(A2) | set_bit(B2) | set_bit(C2) | set_bit(D2) | set_bit(E2) | set_bit(F2) | set_bit(G2) | set_bit(H2);
+    b->pawn[BLACK] = set_bit(A7) | set_bit(B7) | set_bit(C7) | set_bit(D7) | set_bit(E7) | set_bit(F7) | set_bit(G7) | set_bit(H7);
     // rook
-    b->rook[WHITE] = sqr2bit(A1) | sqr2bit(H1);
-    b->rook[BLACK] = sqr2bit(A8) | sqr2bit(H8);
+    b->rook[WHITE] = set_bit(A1) | set_bit(H1);
+    b->rook[BLACK] = set_bit(A8) | set_bit(H8);
     // knight
-    b->knight[WHITE] = sqr2bit(B1) | sqr2bit(G1);
-    b->knight[BLACK] = sqr2bit(B8) | sqr2bit(G8);
+    b->knight[WHITE] = set_bit(B1) | set_bit(G1);
+    b->knight[BLACK] = set_bit(B8) | set_bit(G8);
     // bishop
-    b->bishop[WHITE] = sqr2bit(C1) | sqr2bit(F1);
-    b->bishop[BLACK] = sqr2bit(C8) | sqr2bit(F8);
+    b->bishop[WHITE] = set_bit(C1) | set_bit(F1);
+    b->bishop[BLACK] = set_bit(C8) | set_bit(F8);
     // queen
-    b->queen[WHITE] = sqr2bit(D1);
-    b->queen[BLACK] = sqr2bit(D8);
+    b->queen[WHITE] = set_bit(D1);
+    b->queen[BLACK] = set_bit(D8);
     // king
-    b->king[WHITE] = sqr2bit(E1);
-    b->king[BLACK] = sqr2bit(E8);
+    b->king[WHITE] = set_bit(E1);
+    b->king[BLACK] = set_bit(E8);
 }
 
 /**
@@ -179,7 +179,7 @@ uint64_t horseAtk(uint64_t bbhsqr) {
 BBCache bbHorse_cache() {
     BBCache cache = {0};
     for (int i = 0; i < 64; i++) {
-        uint64_t horse = sqr2bit(i);
+        uint64_t horse = set_bit(i);
         cache.data[i] = horseAtk(horse);
     }
     return cache;
@@ -203,7 +203,7 @@ uint64_t kingAtk(uint64_t bbksqr) {
 BBCache bbKing_cache() {
     BBCache cache = {0};
     for (int i = 0; i < 64; i++) {
-        uint64_t king = sqr2bit(i);
+        uint64_t king = set_bit(i);
         cache.data[i] = kingAtk(king);
     }
     return cache;

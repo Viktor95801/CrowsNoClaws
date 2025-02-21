@@ -8,10 +8,16 @@ Crows No Claws is a simple chess engine that is being developed by a complete be
 
 1.Run the following command (assuming root directory):
 ```bash
-gcc -Wextra -Wpedantic -Wall -Werror -o build/CrowsNoClaws.exe -Iincludes crowsnoclaws.c src/board.c src/move_generator.c src/constant.c src/magic/magic.c -O3
+gcc -Wextra -Wpedantic -Wall -Werror -o build/CrowsNoClaws.exe -Iincludes -Iatk_gen/kindergarten crowsnoclaws.c src/board.c src/move_generator.c src/constant.c src/atk_gen/kindergarten/kindergarten.c src/atk_gen/atk_gen_helpers.c -O3
 ```
  Then run the executable: `./build/CrowsNoClaws.exe`
 2. Download from the releases option (not yet released).
+
+## Thanks to
+<span style="color: #666; opacity: 0.7;">no particular order btw :eyes:</span>
+1. [Tsoj and his Nalwald engine](https://github.com/tsoj/Nalwald)
+2. [Chess Programming Wiki and the CPW discord server](https://www.chessprogramming.org/)
+3. [Martin and his engine](https://github.com/martinnovaak/motor/)
 
 ### TODO
 
