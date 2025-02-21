@@ -1,6 +1,6 @@
 # Crows No Claws
 
-<img src="assets\CrowsNoClawsLogo.png" width="300" height="300">
+<img src="assets/CrowsNoClawsLogo.png" width="300" height="300">
 
 Crows No Claws is a simple chess engine that is being developed by a complete begginer at the topic. The name was choosen with the intention to represent how limited the engine is (after all, what would a crow with no claws be able to do?).
 
@@ -13,7 +13,7 @@ gcc -Wextra -Wpedantic -Wall -Werror -o build/CrowsNoClaws.exe -Iincludes -Iatk_
  Then run the executable: `./build/CrowsNoClaws.exe`
 2. Download from the releases option (not yet released).
 
-## Thanks to
+## Massive thanks to
 <span style="color: #666; opacity: 0.7;">no particular order btw :eyes:</span>
 1. [Tsoj and his Nalwald engine](https://github.com/tsoj/Nalwald)
 2. [Chess Programming Wiki and the CPW discord server](https://www.chessprogramming.org/)
@@ -25,7 +25,7 @@ gcc -Wextra -Wpedantic -Wall -Werror -o build/CrowsNoClaws.exe -Iincludes -Iatk_
     - [x] Initialize board
     - [x] Print board
 - [ ] Add move generator
-    - [ ] Magic
+    - [x] Slider
     - [ ] Legal Moves
     - [ ] Castling
     - [ ] En Passant
