@@ -4,12 +4,12 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+
+#define MAKE_MOVE(from, to, flag) {from, to, flag}
 typedef struct {
-    char piece;
     uint64_t from;
     uint64_t to;
+    char flag;
 } Move;
-
-Move moveInit(char piece, uint64_t from, uint64_t to);
 
 #endif // MOVE_GENERATOR_H

@@ -30,10 +30,40 @@ void init_board(Board *board);
 void print_board(Board *board);
 void print_bitboard(uint64_t board);
 
-bool get_bit(uint64_t board, uint8_t square);
-uint64_t set_bit(uint8_t square);
-void pop_bit(uint64_t *board, uint8_t square);
+/**
+ * @brief Get a bit from a 64-bit board at a given square.
+ * @param board A 64-bit board.
+ * @param square The square to get the bit from.
+ * @return The bit at the given square.
+ */
+static inline bool get_bit(uint64_t board, uint8_t square) {
+    return (board >> square) & 1;
+}
+/**
+ * @brief Get a 64-bit bitboard with only the given square set.
+ * @param square The square to set in the bitboard.
+ * @return A 64-bit bitboard with only the given square set.
+ */
+static inline uint64_t set_bit(uint8_t square) {
+    return 1ULL << square;
+}
+/**
+ * @brief Remove a bit from a 64-bit board at a given square.
+ * 
+ * This function toggles the bit at the specified square in the given 64-bit board,
+ * effectively removing the bit if it was set.
+ * 
+ * @param board A 64-bit board.
+ * @param square The square to toggle the bit.
+ * @return Wheter the bit was set or not.
+ */
 
+static inline bool pop_bit(uint64_t* board, uint8_t square) {
+    *board = *board ^ (1ULL << square);
+    return get_bit(*board, square);
+}
+
+uint64_t boardPieces(Board board, bool side);
 uint64_t emptySqrs(Board board);
 uint64_t filledSqrs(Board board);
 
@@ -53,7 +83,11 @@ uint64_t rookAtk(uint64_t bbrsqr);
 
 uint64_t pawnSinglePushAtk(uint64_t bbpsqr, uint64_t bbemptsqr, bool side);
 uint64_t pawnDoublePushAtk(uint64_t bbpsqr, uint64_t bbemptsqr, bool side);
-uint64_t pawnAtk(uint64_t bbp, Board b, bool side);
+uint64_t pawnAtk(Board b);
+
+uint64_t gen_pawnAtk(Board b);
+uint64_t gen_horseAtk(int sqr);
+uint64_t gen_kingAtk(int sqr, uint64_t attacked_sqr);
 
 extern BBCache horseAtkCache;
 extern BBCache kingAtkCache;

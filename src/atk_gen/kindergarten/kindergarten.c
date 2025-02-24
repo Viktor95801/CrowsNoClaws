@@ -17,7 +17,7 @@ uint64_t gen_rookAtk(int sqr, uint64_t occ) {
     return rookVertical(occ, sqr) | rookHorizontal(occ, sqr);
 }
 uint64_t gen_bishopAtk(int sqr, uint64_t occ) {
-    return bishopDiagonal(occ, sqr) | bishopAntiDiagonal(occ, sqr);
+    return (bishopDiagonal(occ, sqr) | bishopAntiDiagonal(occ, sqr));
 }
 uint64_t gen_queenAtk(int sqr, uint64_t occ) {
     return gen_rookAtk(sqr, occ) | gen_bishopAtk(sqr, occ);

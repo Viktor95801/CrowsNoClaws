@@ -12,24 +12,14 @@
 BBCache horseAtkCache;
 BBCache kingAtkCache;
 
-/**
- * @brief Get a bit from a 64-bit board at a given square.
- * @param board A 64-bit board.
- * @param square The square to get the bit from.
- * @return The bit at the given square.
- */
-bool get_bit(uint64_t board, uint8_t square) {
-    return (board >> square) & 1;
+uint64_t boardPieces(Board board, bool side) {
+    return board.rook[side]
+        | board.knight[side]
+        | board.bishop[side] 
+        | board.queen[side] 
+        | board.king[side] 
+        | board.pawn[side];
 }
-/**
- * @brief Get a 64-bit bitboard with only the given square set.
- * @param square The square to set in the bitboard.
- * @return A 64-bit bitboard with only the given square set.
- */
-uint64_t set_bit(uint8_t square) {
-    return 1ULL << square;
-}
-
 /**
  * @brief Return a 64-bit bitboard with all squares set that are empty.
  * 
@@ -40,24 +30,14 @@ uint64_t set_bit(uint8_t square) {
  * @return A 64-bit bitboard with all squares set that are empty.
  */
 uint64_t emptySqrs(Board board) {
-    uint64_t out = 0;
-    out |= board.pawn[WHITE]   | board.pawn[BLACK];
-    out |= board.rook[WHITE]   | board.rook[BLACK];
-    out |= board.knight[WHITE] | board.knight[BLACK];
-    out |= board.bishop[WHITE] | board.bishop[BLACK];
-    out |= board.queen[WHITE]  | board.queen[BLACK];
-    out |= board.king[WHITE]   | board.king[BLACK];
-    return ~out;
+    return ~(
+        boardPieces(board, WHITE) | boardPieces(board, BLACK)
+    );
 }
 uint64_t filledSqrs(Board board) {
-    uint64_t out = 0;
-    out |= board.pawn[WHITE]   | board.pawn[BLACK];
-    out |= board.rook[WHITE]   | board.rook[BLACK];
-    out |= board.knight[WHITE] | board.knight[BLACK];
-    out |= board.bishop[WHITE] | board.bishop[BLACK];
-    out |= board.queen[WHITE]  | board.queen[BLACK];
-    out |= board.king[WHITE]   | board.king[BLACK];
-    return out;
+    return (
+        boardPieces(board, WHITE) | boardPieces(board, BLACK)
+    );
 }
 
 /**
@@ -164,7 +144,14 @@ void print_bitboard(uint64_t board) {
 
 
 uint64_t horseAtk(uint64_t bbhsqr) {
-    return northOne(noWeOne(bbhsqr)) | westOne(noWeOne(bbhsqr)) | southOne(soWeOne(bbhsqr)) | southOne(soEaOne(bbhsqr)) | westOne(soWeOne(bbhsqr)) | eastOne(soEaOne(bbhsqr)) | northOne(noEaOne(bbhsqr)) | eastOne(noEaOne(bbhsqr));
+    return northOne(noWeOne(bbhsqr)) 
+        | westOne(noWeOne(bbhsqr))
+        | southOne(soWeOne(bbhsqr)) 
+        | southOne(soEaOne(bbhsqr)) 
+        | westOne(soWeOne(bbhsqr)) 
+        | eastOne(soEaOne(bbhsqr)) 
+        | northOne(noEaOne(bbhsqr)) 
+        | eastOne(noEaOne(bbhsqr));
 }
 /**
  * @brief Compute and return a pre-computed cache of all the attacks of a horse at each square on the board.
@@ -197,8 +184,14 @@ BBCache bbHorse_cache() {
  * @return A 64-bit bitboard representing all squares the king can attack.
  */
 uint64_t kingAtk(uint64_t bbksqr) {
-    return northOne(bbksqr) | westOne(bbksqr) | southOne(bbksqr) | eastOne(bbksqr) |
-           noWeOne(bbksqr)  | noEaOne(bbksqr) | soWeOne(bbksqr)  | soEaOne(bbksqr);
+    return northOne(bbksqr) 
+        | westOne(bbksqr) 
+        | southOne(bbksqr) 
+        | eastOne(bbksqr) 
+        | noWeOne(bbksqr)  
+        | noEaOne(bbksqr) 
+        | soWeOne(bbksqr)  
+        | soEaOne(bbksqr);
 }
 BBCache bbKing_cache() {
     BBCache cache = {0};
@@ -235,24 +228,22 @@ uint64_t pawnSinglePushAtk(uint64_t bbpsqr, uint64_t bbemptsqr, bool side) {
  * double push from its initial rank. The function considers whether the pawn is
  * on its starting rank and whether the destination squares are unoccupied.
  *
- * @param bbpsqr A 64-bit bitboard with only the pawn's current square set.
- * @param bbemptsqr A 64-bit bitboard with all empty squares set.
+ * @param pawn A 64-bit bitboard with only the pawn's current square set.
+ * @param empty A 64-bit bitboard with all empty squares set.
  * @param side The side of the pawn (WHITE or BLACK).
  * @return A 64-bit bitboard representing all squares the pawn can attack with
  *         a double push.
  */
-uint64_t pawnDoublePushAtk(uint64_t bbpsqr, uint64_t bbemptsqr, bool side) {
-    uint64_t rank = 0x000000FF00000000 | 0x00000000FF000000;
-    bbpsqr = pawnSinglePushAtk(bbpsqr, bbemptsqr, side);
-    uint64_t result = pawnSinglePushAtk(bbpsqr, bbemptsqr, side) & rank;
-    return result;
+uint64_t pawnDoublePushAtk(uint64_t pawn, uint64_t empty, bool side) {
+    uint64_t singlePush = pawnSinglePushAtk(pawn, empty, side);
+    return pawnSinglePushAtk(singlePush, empty, side) & (0x000000FF00000000 | 0x00000000FF000000);
 }
-uint64_t pawnAtk(uint64_t bbp, Board b, bool side) {
+uint64_t pawnAtk(Board b) {
+    bool side = b.side;
+    uint64_t bbp = b.pawn[side];
     uint64_t attackSquares = !side ? noWeOne(bbp) | noEaOne(bbp) :soWeOne(bbp) | soEaOne(bbp);
-    print_bitboard(attackSquares);
-    uint64_t other_board = b.pawn[!side] | b.rook[!side] | b.knight[!side] | b.bishop[!side] | b.queen[!side] | b.king[!side];
-    uint64_t result = attackSquares & other_board;
-    return result;
+    //print_bitboard(attackSquares);
+    return attackSquares;
 }
 
 uint64_t rookAtk_OnTheFly(uint64_t bbrsqr, uint64_t blockers) {
@@ -377,4 +368,22 @@ uint64_t bishopAtk(uint64_t bbrsqr) {
         copy_bbrsqr = soEaOne(copy_bbrsqr);
     }
     return attacks;
+}
+
+uint64_t gen_pawnAtk(Board b) {
+    return (
+        pawnAtk(b) & (
+            boardPieces(b, !b.side) | set_bit(enpassantSqr)
+        )
+    );
+}
+uint64_t gen_horseAtk(int sqr) {
+    return (
+        horseAtkCache.data[sqr]
+    );
+}
+uint64_t gen_kingAtk(int sqr, uint64_t attacked_sqr) {
+    return (
+        kingAtkCache.data[sqr] & ~attacked_sqr
+    );
 }

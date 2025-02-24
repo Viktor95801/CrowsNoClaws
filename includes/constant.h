@@ -17,21 +17,29 @@
 
 // Constants
 
+enum m_flags {
+    NORMAL, CAPTURE, ENPASSANT, PROMOTION,
+    CASTLE_KW, CASTLE_QW, CASTLE_KB, CASTLE_QB,
+    PROMO_Q, PROMO_R, PROMO_B, PROMO_H,
+};
+
+#define MAX_MOVES 320
+
 #define WHITE 0
 #define BLACK 1
 
 #define PAWN 100
-#define KNIGHT 350
+#define HORSE 350
 #define BISHOP 320
 #define ROOK 500
 #define QUEEN 900
 #define KING 90000
 
+#define LOSS -1000000
+#define DRAW 0
+#define WIN 10000000
+
 // Constant Variables
-
-extern const uint64_t rookMagics[64];
-extern const uint64_t bishopMagics[64];
-
 
 extern int COUNT_BITS(uint64_t integer);
 
@@ -42,5 +50,13 @@ extern int COUNT_BITS(uint64_t integer);
  * @return The index of the least significant bit of the bitboard, -1 if the bitboard is empty.
  */
 extern int LSB(uint64_t bitboard);
+
+// schrödingers cat constants (non-constants)
+
+/* static uint8_t fifty = 0;
+static uint16_t halfmove_clock = 0;
+static uint16_t move_count = 1;
+ */
+extern uint8_t enpassantSqr;
 
 #endif // CONSTANTS_H

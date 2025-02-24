@@ -149,6 +149,7 @@ const uint64_t bishopMagics[64] = {
     0x4010011029020020ULL,
 };
 
+uint8_t enpassantSqr = 0;
 int LSB(uint64_t bitboard) {
     if (!bitboard) {
         /* If the bitboard is empty return -1 */
