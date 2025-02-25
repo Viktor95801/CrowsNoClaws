@@ -5,8 +5,8 @@
 Crows No Claws is a simple chess engine that is being developed by a complete begginer at the topic. The name was choosen with the intention to represent how limited the engine is (after all, what would a crow with no claws be able to do?).
 
 ## How to compile
-
-1.Run the following command (assuming root directory):
+(first download the repo, unzip it and ``cd CrowsNoClaws`` into it)
+1.Run the following command:
 ```bash
 gcc -Wextra -Wpedantic -Wall -Werror -o build/CrowsNoClaws.exe -Iincludes -Iatk_gen/kindergarten crowsnoclaws.c src/board.c src/move_generator.c src/constant.c src/atk_gen/kindergarten/kindergarten.c src/atk_gen/atk_gen_helpers.c -O3
 ```

@@ -51,12 +51,4 @@ extern int COUNT_BITS(uint64_t integer);
  */
 extern int LSB(uint64_t bitboard);
 
-// schrödingers cat constants (non-constants)
-
-/* static uint8_t fifty = 0;
-static uint16_t halfmove_clock = 0;
-static uint16_t move_count = 1;
- */
-extern uint8_t enpassantSqr;
-
 #endif // CONSTANTS_H

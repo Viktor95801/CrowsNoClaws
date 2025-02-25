@@ -23,6 +23,11 @@ typedef struct {
     uint64_t queen[2];
     uint64_t king[2];
 
+    bool castleQS[2];
+    bool csatleKS[2];
+    uint8_t fifty_clock;
+    uint8_t move_count;
+    int8_t enpassantSqr;
     bool side;
 } Board;
 
@@ -62,6 +67,13 @@ static inline bool pop_bit(uint64_t* board, uint8_t square) {
     *board = *board ^ (1ULL << square);
     return get_bit(*board, square);
 }
+/**
+ * @brief Get the piece at the given square.
+ * @param b The board to get the piece from.
+ * @param square The square to get the piece from.
+ * @return The piece at the given square, or '.' if there is no piece.
+ */
+char get_piece(Board *b, uint8_t square);
 
 uint64_t boardPieces(Board board, bool side);
 uint64_t emptySqrs(Board board);

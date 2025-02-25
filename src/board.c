@@ -48,6 +48,9 @@ void init_board(Board *b) {
     memset(b, 0, sizeof(Board));
     
     b->side = WHITE;
+    b->move_count = 1;
+    b->fifty_clock = 0;
+    b->enpassantSqr = -1;
 
     // pawns
     b->pawn[WHITE] = set_bit(A2) | set_bit(B2) | set_bit(C2) | set_bit(D2) | set_bit(E2) | set_bit(F2) | set_bit(G2) | set_bit(H2);
@@ -69,12 +72,6 @@ void init_board(Board *b) {
     b->king[BLACK] = set_bit(E8);
 }
 
-/**
- * @brief Get the piece at the given square.
- * @param b The board to get the piece from.
- * @param square The square to get the piece from.
- * @return The piece at the given square, or '.' if there is no piece.
- */
 char get_piece(Board *b, uint8_t square) {
     if (square > 63) {
         fprintf(stderr, "Invalid square: %u\n", square);
@@ -373,7 +370,7 @@ uint64_t bishopAtk(uint64_t bbrsqr) {
 uint64_t gen_pawnAtk(Board b) {
     return (
         pawnAtk(b) & (
-            boardPieces(b, !b.side) | set_bit(enpassantSqr)
+            boardPieces(b, !b.side) | (b.enpassantSqr != -1 ? set_bit(b.enpassantSqr) : 0)
         )
     );
 }

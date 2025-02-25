@@ -46,7 +46,6 @@ int main(/* int argc, char *argv[] */) {
     printf("Pawn Atks: ");
     b.queen[BLACK] = set_bit(A3);
     print_board(&b);
-    enpassantSqr = E3;
     print_bitboard(gen_pawnAtk(b));
     printf("*********************\nKindergarten tests\n*********************\n");
 
