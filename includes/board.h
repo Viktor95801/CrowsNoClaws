@@ -1,8 +1,9 @@
-#ifndef BOARD_H
-#define BOARD_H
+#pragma once
 
 #include <stdint.h>
 #include <stdbool.h>
+
+typedef uint64_t U64;
 
 enum {
     A1, B1, C1, D1, E1, F1, G1, H1,
@@ -15,93 +16,56 @@ enum {
     A8, B8, C8, D8, E8, F8, G8, H8
 };
 
+enum pieceIndex {
+    PAWN,
+    ROOK,
+    HORSE,
+    BISHOP,
+    QUEEN,
+    KING,
+};
 typedef struct {
-    uint64_t pawn[2];
-    uint64_t rook[2];
-    uint64_t knight[2];
-    uint64_t bishop[2];
-    uint64_t queen[2];
-    uint64_t king[2];
+    U64 white[6];
+    U64 black[6];
 
-    bool castleQS[2];
-    bool csatleKS[2];
-    uint8_t fifty_clock;
-    uint8_t move_count;
-    int8_t enpassantSqr;
     bool side;
+    uint8_t enpass_sqr;
+    uint8_t castling_rights;
+    uint8_t fifty_clock;
+    uint8_t fullmove_clock;
 } Board;
+static inline bool board_get_castlingRight(const Board *board, bool side, bool queen_side) {
+    return ((board->castling_rights >> (side * 2 + queen_side)) & 1);
+}
+static inline void board_set_castlingRight(Board *board, bool side, bool queen_side) {
+    board->castling_rights |= (uint8_t)1 << (side * 2 + queen_side);
+}
+
+static inline void set_bit(U64 *board, int index) {
+    *board |= (U64)1 << index;
+}
+static inline bool get_bit(const U64 *board, int index) {
+    return *board & (U64)1 << index;
+}
+static inline void clear_bit(U64 *board, int index) {
+    *board ^= (U64)1 << index;
+}
+static inline bool pop_bit(U64 *board, int index) {
+    *board ^= (U64)1 << index;
+    return get_bit(board, index);
+}
+static inline U64 LSB(const U64 *board) {
+    return *board & -(*board);
+}
 
 void init_board(Board *board);
-void print_board(Board *board);
-void print_bitboard(uint64_t board);
+Board init_FENboard(const char *FEN);
+void print_board(const Board *board);
+void print_bitboard(const U64 *board);
 
-/**
- * @brief Get a bit from a 64-bit board at a given square.
- * @param board A 64-bit board.
- * @param square The square to get the bit from.
- * @return The bit at the given square.
- */
-static inline bool get_bit(uint64_t board, uint8_t square) {
-    return (board >> square) & 1;
-}
-/**
- * @brief Get a 64-bit bitboard with only the given square set.
- * @param square The square to set in the bitboard.
- * @return A 64-bit bitboard with only the given square set.
- */
-static inline uint64_t set_bit(uint8_t square) {
-    return 1ULL << square;
-}
-/**
- * @brief Remove a bit from a 64-bit board at a given square.
- * 
- * This function toggles the bit at the specified square in the given 64-bit board,
- * effectively removing the bit if it was set.
- * 
- * @param board A 64-bit board.
- * @param square The square to toggle the bit.
- * @return Wheter the bit was set or not.
- */
+U64 rook_mask(int sqr);
+U64 bishop_mask(int sqr);
+U64 king_mask(int sqr);
+U64 horse_mask(int sqr);
 
-static inline bool pop_bit(uint64_t* board, uint8_t square) {
-    *board = *board ^ (1ULL << square);
-    return get_bit(*board, square);
-}
-/**
- * @brief Get the piece at the given square.
- * @param b The board to get the piece from.
- * @param square The square to get the piece from.
- * @return The piece at the given square, or '.' if there is no piece.
- */
-char get_piece(Board *b, uint8_t square);
-
-uint64_t boardPieces(Board board, bool side);
-uint64_t emptySqrs(Board board);
-uint64_t filledSqrs(Board board);
-
-// (Pre)-Cache
-typedef struct {
-    uint64_t data[64];
-} BBCache;
-
-BBCache bbHorse_cache();
-BBCache bbKing_cache();
-
-uint64_t kingAtk(uint64_t bbksqr);
-uint64_t rookAtk_OnTheFly(uint64_t bbrsqr, uint64_t blockers);
-uint64_t bishopAtk_OnTheFly(uint64_t bbrsqr, uint64_t blockers);
-uint64_t bishopAtk(uint64_t bbrsqr);
-uint64_t rookAtk(uint64_t bbrsqr);
-
-uint64_t pawnSinglePushAtk(uint64_t bbpsqr, uint64_t bbemptsqr, bool side);
-uint64_t pawnDoublePushAtk(uint64_t bbpsqr, uint64_t bbemptsqr, bool side);
-uint64_t pawnAtk(Board b);
-
-uint64_t gen_pawnAtk(Board b);
-uint64_t gen_horseAtk(int sqr);
-uint64_t gen_kingAtk(int sqr, uint64_t attacked_sqr);
-
-extern BBCache horseAtkCache;
-extern BBCache kingAtkCache;
-
-#endif // BOARD_H
+U64 gen_horseAtk(Board *board, int sqr);
